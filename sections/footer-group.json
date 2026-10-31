@@ -8,6 +8,10 @@
         "auto_product": "soft-winter-jacket"
       }
     },
+    "lh-quick-view": {
+      "type": "lh-quick-view",
+      "settings": {}
+    },
     "footer": {
       "type": "footer",
       "settings": {
@@ -26,5 +30,5 @@
       }
     }
   },
-  "order": ["lh-cart-drawer", "footer"]
+  "order": ["lh-cart-drawer", "lh-quick-view", "footer"]
 }
