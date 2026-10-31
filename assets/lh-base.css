@@ -1,7 +1,7 @@
 /* Loomhaus base: design tokens + shared button component.
    Values are eyeballed from the Figma screenshots - verify hex codes in Figma Dev Mode. */
 :root {
-  --lh-cream: #f6f3ec;
+  --lh-cream: #f6f3ed;
   --lh-dark: #2a2b25;
   --lh-olive: #747a5e;
   --lh-sand: #e5dfd1;
@@ -29,12 +29,22 @@ body {
   font-family: var(--lh-font-body);
 }
 
+/* Dawn sets its own body font with higher priority, so every Loomhaus section sets the font itself */
+.lh-announce,
+.lh-header,
+.lh-hero,
+.lh-marquee,
+.lh-grid {
+  font-family: var(--lh-font-body);
+}
+
 /* ---------- Button (Primary / Secondary) ---------- */
 .lh-btn {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 24px;
+  padding: 15px 26px;
+  line-height: 1;
   border: 0;
   border-radius: 999px;
   font-family: var(--lh-font-body);

@@ -8,7 +8,7 @@
         "stat-3": { "type": "stat", "settings": { "value": "30 days", "label": "free returns" } }
       },
       "block_order": ["stat-1", "stat-2", "stat-3"],
-      "settings": {}
+      "settings": { "card_product": "yellow-wool-jumper" }
     },
     "lh-marquee": {
       "type": "lh-marquee",
@@ -21,7 +21,20 @@
       },
       "block_order": ["item-1", "item-2", "item-3", "item-4", "item-5"],
       "settings": { "speed": 30 }
+    },
+    "lh-product-grid": {
+      "type": "lh-product-grid",
+      "blocks": {
+        "tile-1": { "type": "tile", "settings": { "product": "ocean-blue-shirt", "x": 50, "y": 30 } },
+        "tile-2": { "type": "tile", "settings": { "product": "olive-green-jacket", "x": 56, "y": 41 } },
+        "tile-3": { "type": "tile", "settings": { "product": "navy-sport-jacket", "x": 43, "y": 36 } },
+        "tile-4": { "type": "tile", "settings": { "product": "striped-silk-blouse", "x": 52, "y": 30 } },
+        "tile-5": { "type": "tile", "settings": { "product": "led-high-tops", "x": 44, "y": 55 } },
+        "tile-6": { "type": "tile", "settings": { "product": "striped-skirt-and-top", "x": 51, "y": 67 } }
+      },
+      "block_order": ["tile-1", "tile-2", "tile-3", "tile-4", "tile-5", "tile-6"],
+      "settings": {}
     }
   },
-  "order": ["lh-hero", "lh-marquee"]
+  "order": ["lh-hero", "lh-marquee", "lh-product-grid"]
 }

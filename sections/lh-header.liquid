@@ -58,7 +58,8 @@
   }
   .lh-header__tagline { margin: 0; font-size: 14px; text-align: center; }
   .lh-header__actions { display: flex; justify-content: flex-end; align-items: center; gap: 24px; }
-  .lh-header__cta { padding: 13px 22px; }
+  /* .lh-header prefix = higher priority than the shared .lh-btn rules in lh-base.css */
+  .lh-header .lh-header__cta { padding: 14px 24px; }
 
   .lh-header__cart {
     position: relative;
@@ -88,8 +89,8 @@
   /* Mobile Figma: only logo + cart */
   @media (max-width: 749px) {
     .lh-header__inner { grid-template-columns: 1fr auto; padding-top: 12px; padding-bottom: 12px; }
-    .lh-header__tagline,
-    .lh-header__cta { display: none; }
+    .lh-header .lh-header__tagline,
+    .lh-header .lh-header__cta { display: none; }
   }
 {% endstylesheet %}
 

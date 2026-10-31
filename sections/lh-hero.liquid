@@ -73,6 +73,9 @@
 </section>
 
 {% stylesheet %}
+  /* Dawn's body uses its own colour scheme (white), so the hero paints its own background */
+  .lh-hero { background: var(--lh-cream); }
+
   .lh-hero__inner {
     max-width: var(--lh-page-width);
     margin: 0 auto;
@@ -171,9 +174,9 @@
   /* ---------- Mobile ---------- */
   @media (max-width: 749px) {
     .lh-hero__inner { grid-template-columns: 1fr; padding-top: 28px; padding-bottom: 44px; gap: 32px; }
-    .lh-hero__title { max-width: none; margin-bottom: 16px; }
+    .lh-hero__title { margin-bottom: 16px; }
     .lh-hero__text { font-size: 16px; }
-    .lh-hero__cta { display: flex; justify-content: center; width: 100%; }
+    .lh-hero .lh-hero__cta { display: flex; justify-content: center; width: 100%; }
     .lh-hero__stats { justify-content: space-between; gap: 12px; margin-top: 24px; }
     .lh-hero__media { width: 85%; }
     .lh-hero__card { display: none; }
