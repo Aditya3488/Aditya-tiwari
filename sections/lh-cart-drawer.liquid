@@ -1,0 +1,211 @@
+{%- liquid
+  assign auto_product = section.settings.auto_product
+  assign auto_variant = nil
+
+  if auto_product != blank
+    for variant in auto_product.variants
+      assign opts = variant.options | join: '|' | downcase | split: '|'
+      if opts contains 'black' and opts contains 'm' and variant.available
+        assign auto_variant = variant
+        break
+      endif
+    endfor
+  endif
+-%}
+
+<div
+  class="lh-drawer"
+  data-cart-drawer
+  data-auto-variant-id="{{ auto_variant.id }}"
+  data-auto-handle="{{ auto_product.handle }}"
+  aria-hidden="true"
+>
+  <div class="lh-drawer__overlay" data-cart-close></div>
+
+  <aside class="lh-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="lh-drawer-title">
+    <div class="lh-drawer__body" data-cart-body>
+
+      <header class="lh-drawer__head">
+        <h2 class="lh-drawer__title" id="lh-drawer-title">Your cart ({{ cart.item_count }})</h2>
+        <button type="button" class="lh-drawer__close" data-cart-close aria-label="Close cart">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+
+      {%- if cart.item_count == 0 -%}
+        <div class="lh-drawer__empty">
+          <p>Your cart is empty.</p>
+          <a href="{{ routes.all_products_collection_url }}" class="lh-btn lh-btn--secondary">Continue shopping</a>
+        </div>
+      {%- else -%}
+        <ul class="lh-drawer__items">
+          {%- for item in cart.items -%}
+            {%- assign is_auto = false -%}
+            {%- if item.properties._auto_added != blank -%}{%- assign is_auto = true -%}{%- endif -%}
+
+            <li class="lh-line{% if is_auto %} is-auto{% endif %}">
+              <a href="{{ item.url }}" class="lh-line__media">
+                {%- if item.image -%}
+                  {{ item.image | image_url: width: 180 | image_tag: loading: 'lazy', alt: item.product.title, class: 'lh-line__img' }}
+                {%- endif -%}
+              </a>
+
+              <div class="lh-line__info">
+                {%- if is_auto -%}<span class="lh-line__badge">Auto-added</span>{%- endif -%}
+                <p class="lh-line__title">{{ item.product.title }}</p>
+                {%- unless item.product.has_only_default_variant -%}
+                  <p class="lh-line__variant">{{ item.variant.title }}</p>
+                {%- endunless -%}
+
+                <div class="lh-line__controls">
+                  <div class="lh-qty">
+                    <button type="button" class="lh-qty__btn" data-action="qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | minus: 1 }}" aria-label="Decrease quantity" {% if is_auto %}disabled{% endif %}>−</button>
+                    <span class="lh-qty__value">{{ item.quantity }}</span>
+                    <button type="button" class="lh-qty__btn" data-action="qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | plus: 1 }}" aria-label="Increase quantity" {% if is_auto %}disabled{% endif %}>+</button>
+                  </div>
+                  <button type="button" class="lh-line__remove" data-action="qty" data-key="{{ item.key }}" data-qty="0" {% if is_auto %}data-auto="true"{% endif %}>Remove</button>
+                </div>
+              </div>
+
+              <p class="lh-line__price">{{ item.final_line_price | money }}</p>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <p class="lh-drawer__error" data-cart-error hidden></p>
+
+        <footer class="lh-drawer__foot">
+          <p class="lh-drawer__subtotal">
+            <span>Subtotal</span>
+            <strong>{{ cart.total_price | money }}</strong>
+          </p>
+          <p class="lh-drawer__note">Taxes included. Shipping calculated at checkout.</p>
+          <form action="{{ routes.cart_url }}" method="post">
+            <button type="submit" name="checkout" class="lh-btn lh-btn--primary lh-drawer__checkout">
+              Checkout
+              <svg class="lh-btn__arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+                <path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </form>
+        </footer>
+      {%- endif -%}
+
+    </div>
+  </aside>
+</div>
+
+<script src="{{ 'lh-cart.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .lh-no-scroll { overflow: hidden; }
+
+  .lh-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    visibility: hidden;
+    font-family: var(--lh-font-body);
+    transition: visibility 0s linear 0.3s;
+  }
+  .lh-drawer.is-open { visibility: visible; transition-delay: 0s; }
+
+  .lh-drawer__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .lh-drawer.is-open .lh-drawer__overlay { opacity: 1; }
+
+  .lh-drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(100%, 430px);
+    background: var(--lh-white);
+    color: var(--lh-text);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+  .lh-drawer.is-open .lh-drawer__panel { transform: none; }
+
+  .lh-drawer__body { display: flex; flex-direction: column; height: 100%; transition: opacity 0.2s ease; }
+  .lh-drawer.is-loading .lh-drawer__body { opacity: 0.55; pointer-events: none; }
+
+  .lh-drawer__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  .lh-drawer__title { margin: 0; font-family: var(--lh-font-head); font-size: 20px; font-weight: 700; }
+  .lh-drawer__close { padding: 4px; border: 0; background: none; color: inherit; cursor: pointer; }
+
+  .lh-drawer__items { flex: 1; margin: 0; padding: 4px 24px; overflow-y: auto; list-style: none; }
+  .lh-drawer__empty { flex: 1; display: grid; place-content: center; justify-items: center; gap: 16px; padding: 24px; }
+
+  /* ---------- Line item ---------- */
+  .lh-line {
+    display: grid;
+    grid-template-columns: 62px 1fr auto;
+    gap: 14px;
+    padding: 16px 0;
+  }
+  .lh-line__media { width: 62px; height: 76px; border-radius: 8px; overflow: hidden; background: var(--lh-sand); }
+  .lh-line__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lh-line__info p { margin: 0; }
+  .lh-line__badge {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--lh-sand);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .lh-line__title { font-size: 14px; font-weight: 500; }
+  .lh-line__variant { margin-top: 2px !important; font-size: 12px; color: var(--lh-muted); }
+  .lh-line__price { margin: 0; font-size: 14px; font-weight: 500; }
+
+  .lh-line__controls { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+  .lh-qty { display: inline-flex; align-items: center; border: 1px solid rgba(0, 0, 0, 0.18); border-radius: 6px; }
+  .lh-qty__btn { width: 24px; height: 24px; padding: 0; border: 0; background: none; font-size: 14px; cursor: pointer; color: inherit; }
+  .lh-qty__btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .lh-qty__value { min-width: 20px; text-align: center; font-size: 12px; }
+  .lh-line__remove { padding: 0; border: 0; background: none; font-size: 12px; color: var(--lh-muted); cursor: pointer; }
+  @media (hover: hover) { .lh-line__remove:hover { color: var(--lh-text); text-decoration: underline; } }
+
+  /* ---------- Footer ---------- */
+  .lh-drawer__error { margin: 0; padding: 10px 24px; font-size: 13px; color: var(--lh-red); }
+  .lh-drawer__foot { padding: 18px 24px 24px; border-top: 1px solid rgba(0, 0, 0, 0.1); }
+  .lh-drawer__subtotal { display: flex; justify-content: space-between; margin: 0 0 6px; font-size: 15px; }
+  .lh-drawer__subtotal strong { font-weight: 500; }
+  .lh-drawer__note { margin: 0 0 16px; font-size: 11px; color: var(--lh-muted); }
+  .lh-drawer .lh-drawer__checkout { display: flex; justify-content: center; width: 100%; }
+
+  @media (max-width: 749px) {
+    .lh-drawer__panel { width: 100%; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LH Cart drawer",
+  "settings": [
+    {
+      "type": "product",
+      "id": "auto_product",
+      "label": "Auto-added product",
+      "info": "Added automatically when a Black / M item is in the cart."
+    }
+  ]
+}
+{% endschema %}
