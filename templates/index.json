@@ -34,7 +34,11 @@
       },
       "block_order": ["tile-1", "tile-2", "tile-3", "tile-4", "tile-5", "tile-6"],
       "settings": {}
+    },
+    "lh-featured-product": {
+      "type": "lh-featured-product",
+      "settings": { "product": "classic-varsity-top" }
     }
   },
-  "order": ["lh-hero", "lh-marquee", "lh-product-grid"]
+  "order": ["lh-hero", "lh-marquee", "lh-product-grid", "lh-featured-product"]
 }

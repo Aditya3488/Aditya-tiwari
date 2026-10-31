@@ -34,7 +34,8 @@ body {
 .lh-header,
 .lh-hero,
 .lh-marquee,
-.lh-grid {
+.lh-grid,
+.lh-fp {
   font-family: var(--lh-font-body);
 }
 

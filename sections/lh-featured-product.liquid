@@ -1,0 +1,354 @@
+{%- liquid
+  assign fp = section.settings.product
+  assign offers = section.settings.offers
+  assign selected = fp.selected_or_first_available_variant
+-%}
+
+<section class="lh-fp" data-fp data-qty="1">
+  <div class="lh-fp__inner">
+
+    {%- if fp == blank -%}
+      <p class="lh-fp__empty">Pick a product for this section in the theme editor.</p>
+    {%- else -%}
+
+      {%- comment -%} ---------- Gallery: one scrolling strip, arrows / thumbs / dots just move it ---------- {%- endcomment -%}
+      <div class="lh-fp__gallery">
+        <div class="lh-fp__stage">
+          <div class="lh-fp__track" data-fp-track>
+            {%- for media in fp.media -%}
+              {%- if media.media_type == 'image' -%}
+                <div class="lh-fp__slide" data-media-id="{{ media.id }}">
+                  {{
+                    media.preview_image
+                    | image_url: width: 900
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '450, 700, 900',
+                      sizes: '(min-width: 750px) 600px, 90vw',
+                      alt: media.alt | default: fp.title
+                  }}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          <button type="button" class="lh-fp__arrow lh-fp__arrow--prev" data-fp-arrow="-1" aria-label="Previous image">
+            <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M6.5 1L1.5 6l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="lh-fp__arrow lh-fp__arrow--next" data-fp-arrow="1" aria-label="Next image">
+            <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M1.5 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <div class="lh-fp__dots">
+          {%- for media in fp.media -%}
+            {%- if media.media_type == 'image' -%}
+              <button type="button" class="lh-fp__dot" data-fp-go="{{ forloop.index0 }}" aria-label="Show image {{ forloop.index }}"></button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        <div class="lh-fp__thumbs">
+          {%- for media in fp.media -%}
+            {%- if media.media_type == 'image' -%}
+              <button type="button" class="lh-fp__thumb" data-fp-go="{{ forloop.index0 }}" aria-label="Show image {{ forloop.index }}">
+                {{ media.preview_image | image_url: width: 140 | image_tag: loading: 'lazy', alt: '' }}
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- comment -%} ---------- Info column (swapped when the variant changes) ---------- {%- endcomment -%}
+      <div class="lh-fp__info" data-fp-info>
+        {% render 'lh-fp-info', product: fp, variant: selected, offers: offers, tax_note: section.settings.tax_note %}
+      </div>
+
+      {%- comment -%} One ready-made copy of the info column per variant. {%- endcomment -%}
+      {%- for v in fp.variants -%}
+        <template data-fp-variant="{{ v.id }}">
+          {%- render 'lh-fp-info', product: fp, variant: v, offers: offers, tax_note: section.settings.tax_note -%}
+        </template>
+      {%- endfor -%}
+
+    {%- endif -%}
+  </div>
+</section>
+
+<script src="{{ 'lh-featured-product.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .lh-fp { background: var(--lh-cream); }
+  .lh-fp__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+    gap: 60px;
+    align-items: start;
+    max-width: 1190px;
+    margin: 0 auto;
+    padding: 70px 20px 90px;
+  }
+  .lh-fp__empty { grid-column: 1 / -1; text-align: center; color: var(--lh-muted); }
+
+  /* ---------- Gallery ---------- */
+  .lh-fp__stage { position: relative; }
+  .lh-fp__track {
+    display: flex;
+    overflow-x: auto;
+    border-radius: 18px;
+    background: var(--lh-sand);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .lh-fp__track::-webkit-scrollbar { display: none; }
+  .lh-fp__slide { flex: 0 0 100%; aspect-ratio: 1 / 1; scroll-snap-align: start; }
+  .lh-fp__slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .lh-fp__arrow {
+    position: absolute;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--lh-olive);
+    color: var(--lh-white);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: opacity 0.2s ease;
+  }
+  .lh-fp__arrow--prev { left: 14px; }
+  .lh-fp__arrow--next { right: 14px; }
+  .lh-fp__arrow:disabled { opacity: 0.35; cursor: default; }
+
+  .lh-fp__thumbs { display: flex; gap: 10px; margin-top: 14px; }
+  .lh-fp__thumb {
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: var(--lh-sand);
+    cursor: pointer;
+  }
+  .lh-fp__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lh-fp__thumb[aria-current='true'] { border-color: var(--lh-text); }
+
+  .lh-fp__dots { display: none; }
+
+  /* ---------- Info ---------- */
+  .lh-fp__meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .lh-fp__badge {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--lh-olive);
+    color: var(--lh-white);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .lh-fp__rating { display: flex; align-items: center; gap: 5px; margin: 0; font-size: 12px; }
+  .lh-fp__rating span { color: var(--lh-muted); }
+
+  .lh-fp__title {
+    margin: 16px 0 14px;
+    font-family: var(--lh-font-head);
+    font-size: clamp(32px, 3.6vw, 48px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  .lh-fp__price { display: flex; align-items: center; gap: 10px; }
+  .lh-fp__now { font-family: var(--lh-font-head); font-size: 24px; font-weight: 600; }
+  .lh-fp__was { font-size: 16px; color: var(--lh-muted); }
+  .lh-fp__save {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--lh-red);
+    color: var(--lh-white);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .lh-fp__tax { margin: 4px 0 16px; font-size: 11px; color: var(--lh-muted); }
+
+  .lh-fp__highlight {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    background: var(--lh-sand);
+  }
+  .lh-fp__highlight strong { display: block; font-size: 14px; }
+  .lh-fp__highlight p { margin: 2px 0 0; font-size: 11px; color: var(--lh-muted); }
+  .lh-fp__check {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--lh-olive);
+    color: var(--lh-white);
+  }
+
+  .lh-fp__label {
+    margin: 18px 0 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Colour swatch: ring shows on hover / selected */
+  .lh-fp__swatches { display: flex; gap: 10px; }
+  .lh-swatch {
+    width: 30px;
+    height: 30px;
+    padding: 3px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  .lh-swatch__dot { display: block; width: 100%; height: 100%; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.2); }
+  @media (hover: hover) { .lh-swatch:hover { border-color: rgba(0, 0, 0, 0.25); } }
+  .lh-swatch[aria-pressed='true'] { border-color: var(--lh-text); }
+
+  /* Size pill */
+  .lh-fp__sizes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .lh-size {
+    position: relative;
+    min-width: 72px;
+    height: 38px;
+    padding: 0 20px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: var(--lh-sand);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--lh-text);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  @media (hover: hover) { .lh-size:not(:disabled):hover { border-color: var(--lh-text); } }
+  .lh-size[aria-pressed='true'] { background: var(--lh-dark); color: var(--lh-white); border-color: var(--lh-dark); }
+  .lh-size.is-sold-out { background: rgba(229, 223, 209, 0.45); color: rgba(0, 0, 0, 0.3); cursor: not-allowed; text-decoration: line-through; }
+  .lh-size__ribbon {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: #5b5c52;
+    color: var(--lh-white);
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-decoration: none;
+    transform: translateX(-50%);
+  }
+
+  /* Quantity + buttons */
+  .lh-fp__buy { display: flex; gap: 10px; margin-top: 22px; }
+  .lh-fp__qty {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px;
+    border: 1px solid var(--lh-text);
+    border-radius: 8px;
+  }
+  .lh-fp__qty-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: var(--lh-sand);
+    font-size: 14px;
+    cursor: pointer;
+    color: inherit;
+  }
+  .lh-fp__qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .lh-fp__qty-value { min-width: 28px; text-align: center; font-size: 13px; }
+
+  .lh-fp .lh-fp__add { flex: 1; justify-content: center; border-radius: 8px; padding-top: 16px; padding-bottom: 16px; }
+  .lh-fp__buynow {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    border: 1px solid var(--lh-text);
+    border-radius: 8px;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--lh-text);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  @media (hover: hover) { .lh-fp__buynow:not(:disabled):hover { background: var(--lh-dark); color: var(--lh-white); } }
+  .lh-fp__buynow:disabled { opacity: 0.4; cursor: not-allowed; }
+  .lh-fp__error { margin: 8px 0 0; font-size: 12px; color: var(--lh-red); }
+
+  /* Offer cards */
+  .lh-fp__offers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 0; padding: 0; list-style: none; }
+  .lh-offer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px dashed rgba(0, 0, 0, 0.35);
+    border-radius: 10px;
+    background: var(--lh-sand);
+  }
+  .lh-offer__icon { flex: none; display: grid; }
+  .lh-offer__text { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .lh-offer__text strong { font-size: 13px; }
+  .lh-offer__text small { font-size: 10px; color: var(--lh-muted); }
+  .lh-offer__status { font-size: 11px; color: var(--lh-muted); }
+  .lh-offer__copy { flex: none; padding: 4px; border: 0; background: none; color: var(--lh-text); cursor: pointer; }
+  .lh-offer.is-copied .lh-offer__copy { display: none; }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 749px) {
+    .lh-fp__inner { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px 48px; }
+    .lh-fp__arrow, .lh-fp__thumbs { display: none; }
+    .lh-fp__dots { display: flex; gap: 6px; margin-top: 12px; }
+    .lh-fp__dot { width: 6px; height: 6px; padding: 0; border: 0; border-radius: 6px; background: var(--lh-sand-hover); cursor: pointer; transition: width 0.2s ease; }
+    .lh-fp__dot[aria-current='true'] { width: 22px; background: var(--lh-text); }
+    .lh-fp__title { font-size: 34px; }
+    .lh-fp__offers { grid-template-columns: 1fr; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LH Featured product",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product" },
+    { "type": "text", "id": "tax_note", "label": "Price note", "default": "MRP inclusive of all taxes" },
+    {
+      "type": "metaobject_list",
+      "id": "offers",
+      "label": "Offers",
+      "metaobject_type": "offer",
+      "limit": 2
+    }
+  ],
+  "presets": [{ "name": "LH Featured product" }]
+}
+{% endschema %}

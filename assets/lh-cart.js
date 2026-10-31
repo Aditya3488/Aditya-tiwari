@@ -135,8 +135,11 @@
 
   /* ---------- Public API (used by quick view and the featured product) ---------- */
 
-  const add = (id, quantity = 1) =>
-    run(() => post('cart/add.js', { items: [{ id: Number(id), quantity: Number(quantity) }] })).then(open);
+  // { open: false } adds without showing the drawer (used by "Buy it now").
+  const add = (id, quantity = 1, { open: showDrawer = true } = {}) =>
+    run(() => post('cart/add.js', { items: [{ id: Number(id), quantity: Number(quantity) }] })).then(() => {
+      if (showDrawer) open();
+    });
 
   window.LhCart = { add, open, close };
 

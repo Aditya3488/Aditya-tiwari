@@ -1,0 +1,225 @@
+{%- comment -%}
+  Right-hand column of the featured product, for ONE variant.
+  Everything that depends on the variant (price, "Save X%", selected swatch/size,
+  sold-out state, offer prices) is worked out here in Liquid.
+  The section prints this snippet once per variant inside <template> tags, and JS swaps them in.
+
+  Params: product, variant, offers (metaobject list), tax_note
+{%- endcomment -%}
+
+{%- liquid
+  # ---- Where are the Color and Size options? ----
+  assign color_pos = 0
+  assign size_pos = 0
+  for option in product.options_with_values
+    assign option_name = option.name | downcase
+    if option_name == 'color' or option_name == 'colour'
+      assign color_pos = option.position
+    elsif option_name == 'size'
+      assign size_pos = option.position
+    endif
+  endfor
+  assign ci = color_pos | minus: 1
+  assign si = size_pos | minus: 1
+
+  assign cur_color = ''
+  assign cur_size = ''
+  if color_pos > 0
+    assign cur_color = variant.options[ci]
+  endif
+  if size_pos > 0
+    assign cur_size = variant.options[si]
+  endif
+
+  # ---- Data we added in Shopify (metafields / metaobjects) ----
+  assign badge = product.metafields.custom.badge.value
+  assign rating = product.metafields.custom.rating.value
+  assign review_count = product.metafields.custom.review_count.value
+  assign highlight = product.metafields.custom.highlight.value
+  assign ribbons = product.metafields.custom.size_ribbons.value
+
+  # ---- "Save X%" ----
+  assign save_percent = 0
+  if variant.compare_at_price > variant.price
+    assign save_percent = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
+  endif
+-%}
+
+<div class="lh-fp__panel" data-media-id="{{ variant.featured_media.id }}">
+
+  <div class="lh-fp__meta">
+    {%- if badge != blank -%}<span class="lh-fp__badge">{{ badge }}</span>{%- endif -%}
+    {%- if rating != blank -%}
+      <p class="lh-fp__rating">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 18l-6.4 3.6L7 14.5 1.7 9.5l7.2-.9L12 2z"/></svg>
+        <strong>{{ rating.rating }}</strong>
+        {%- if review_count != blank -%}<span>({{ review_count }} Reviews)</span>{%- endif -%}
+      </p>
+    {%- endif -%}
+  </div>
+
+  <h2 class="lh-fp__title">{{ product.title }}</h2>
+
+  <div class="lh-fp__price">
+    <span class="lh-fp__now">{{ variant.price | money }}</span>
+    {%- if save_percent > 0 -%}
+      <s class="lh-fp__was">{{ variant.compare_at_price | money }}</s>
+      <span class="lh-fp__save">Save {{ save_percent }}%</span>
+    {%- endif -%}
+  </div>
+  {%- if tax_note != blank -%}<p class="lh-fp__tax">{{ tax_note }}</p>{%- endif -%}
+
+  {%- if highlight != blank -%}
+    <div class="lh-fp__highlight">
+      <span class="lh-fp__check" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5l2.5 2.5L10 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <div>
+        <strong>{{ highlight.title.value }}</strong>
+        <p>{{ highlight.description.value }}</p>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ---------- Colour swatches ---------- {%- endcomment -%}
+  {%- if color_pos > 0 -%}
+    <p class="lh-fp__label">Color: <span>{{ cur_color }}</span></p>
+    <div class="lh-fp__swatches" role="group" aria-label="Color">
+      {%- for color_value in product.options_with_values[ci].values -%}
+        {%- liquid
+          # Which variant does this swatch lead to? Same size if possible, else the first with this colour.
+          assign target = nil
+          for v in product.variants
+            if v.options[ci] == color_value
+              if target == nil
+                assign target = v
+              endif
+              if size_pos > 0 and v.options[si] == cur_size
+                assign target = v
+                break
+              endif
+            endif
+          endfor
+
+          assign swatch = shop.metaobjects.color_swatch[color_value | handleize]
+          assign dot = swatch.hex.value | default: color_value
+        -%}
+        <button
+          type="button"
+          class="lh-swatch"
+          data-group="color"
+          data-variant="{{ target.id }}"
+          aria-pressed="{% if color_value == cur_color %}true{% else %}false{% endif %}"
+          aria-label="{{ color_value | escape }}"
+          title="{{ color_value | escape }}"
+        >
+          <span class="lh-swatch__dot" style="background: {{ dot }};"></span>
+        </button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ---------- Size pills ---------- {%- endcomment -%}
+  {%- if size_pos > 0 -%}
+    <p class="lh-fp__label">Select size</p>
+    <div class="lh-fp__sizes" role="group" aria-label="Size">
+      {%- for size_value in product.options_with_values[si].values -%}
+        {%- liquid
+          assign target = nil
+          for v in product.variants
+            assign colour_ok = true
+            if color_pos > 0 and v.options[ci] != cur_color
+              assign colour_ok = false
+            endif
+            if colour_ok and v.options[si] == size_value
+              assign target = v
+              break
+            endif
+          endfor
+
+          assign ribbon_label = ''
+          for ribbon in ribbons
+            if ribbon.size.value == size_value
+              assign ribbon_label = ribbon.label.value
+            endif
+          endfor
+        -%}
+        <button
+          type="button"
+          class="lh-size{% if target == nil or target.available == false %} is-sold-out{% endif %}"
+          data-group="size"
+          data-variant="{{ target.id }}"
+          aria-pressed="{% if size_value == cur_size %}true{% else %}false{% endif %}"
+          {% if target == nil or target.available == false %}disabled{% endif %}
+        >
+          {%- if ribbon_label != blank -%}<span class="lh-size__ribbon">{{ ribbon_label }}</span>{%- endif -%}
+          {{ size_value }}
+        </button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ---------- Quantity + buttons ---------- {%- endcomment -%}
+  <div class="lh-fp__buy">
+    <div class="lh-fp__qty">
+      <button type="button" class="lh-fp__qty-btn" data-fp-qty="-1" aria-label="Decrease quantity">−</button>
+      <span class="lh-fp__qty-value" data-fp-qty-value>01</span>
+      <button type="button" class="lh-fp__qty-btn" data-fp-qty="1" aria-label="Increase quantity">+</button>
+    </div>
+
+    <button
+      type="button"
+      class="lh-btn lh-btn--primary lh-fp__add"
+      data-fp-add
+      data-variant-id="{{ variant.id }}"
+      {% unless variant.available %}disabled{% endunless %}
+    >
+      {%- if variant.available -%}
+        Add to cart
+        <svg class="lh-btn__arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+          <path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      {%- else -%}
+        Sold out
+      {%- endif -%}
+    </button>
+  </div>
+
+  <button type="button" class="lh-fp__buynow" data-fp-buy data-variant-id="{{ variant.id }}" {% unless variant.available %}disabled{% endunless %}>
+    Buy it now
+  </button>
+
+  <p class="lh-fp__error" data-fp-error role="alert" hidden></p>
+
+  {%- comment -%} ---------- Offer cards ---------- {%- endcomment -%}
+  {%- if offers != blank -%}
+    <ul class="lh-fp__offers">
+      {%- for offer in offers -%}
+        {%- liquid
+          assign percent = offer.discount_percent.value
+          assign min_qty = offer.min_quantity.value | default: 1
+          # price after discount: price * (100 - percent) / 100, rounded to the nearest paisa
+          assign keep_percent = 100 | minus: percent
+          assign offer_price = variant.price | times: keep_percent | divided_by: 100.0 | round
+        -%}
+        <li class="lh-offer">
+          <span class="lh-offer__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.3"/><path d="M6 12l6-6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="6.5" r="1" fill="currentColor"/><circle cx="11.5" cy="11.5" r="1" fill="currentColor"/></svg>
+          </span>
+          <span class="lh-offer__text">
+            <strong>Get it for {{ offer_price | money }}</strong>
+            <small>
+              {%- if min_qty > 1 -%}Buy {{ min_qty }}, code {{ offer.code.value }} for {{ percent }}% off
+              {%- else -%}Use code {{ offer.code.value }} for {{ percent }}% off{%- endif -%}
+            </small>
+          </span>
+          <span class="lh-offer__status" data-offer-status hidden>Copied</span>
+          <button type="button" class="lh-offer__copy" data-copy="{{ offer.code.value | escape }}" aria-label="Copy code {{ offer.code.value | escape }}">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><rect x="4.5" y="4.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 4.5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v5A1.5 1.5 0 0 0 3 9.5h1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+          </button>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+
+</div>
