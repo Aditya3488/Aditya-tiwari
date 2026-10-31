@@ -2,6 +2,16 @@
   assign fp = section.settings.product
   assign offers = section.settings.offers
   assign selected = fp.selected_or_first_available_variant
+
+  # Figma opens on size M: start from the first available variant that has the default size
+  if section.settings.default_size != blank
+    for v in fp.variants
+      if v.available and v.options contains section.settings.default_size
+        assign selected = v
+        break
+      endif
+    endfor
+  endif
 -%}
 
 <section class="lh-fp" data-fp data-qty="1">
@@ -341,6 +351,7 @@
   "settings": [
     { "type": "product", "id": "product", "label": "Product" },
     { "type": "text", "id": "tax_note", "label": "Price note", "default": "MRP inclusive of all taxes" },
+    { "type": "text", "id": "default_size", "label": "Pre-selected size", "default": "M" },
     {
       "type": "metaobject_list",
       "id": "offers",
