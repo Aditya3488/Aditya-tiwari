@@ -101,7 +101,8 @@
             endif
           endfor
 
-          assign swatch = shop.metaobjects.color_swatch[color_value | handleize]
+          assign swatch_handle = color_value | handleize
+          assign swatch = shop.metaobjects.color_swatch[swatch_handle]
           assign dot = swatch.hex.value | default: color_value
         -%}
         <button

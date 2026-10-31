@@ -94,7 +94,8 @@
             <div class="lh-qv__colors" role="group" aria-label="Color">
               {%- for color_value in product.options_with_values[color_idx].values -%}
                 {%- liquid
-                  assign swatch = shop.metaobjects.color_swatch[color_value | handleize]
+                  assign swatch_handle = color_value | handleize
+                  assign swatch = shop.metaobjects.color_swatch[swatch_handle]
                   assign dot = swatch.hex.value | default: color_value
                   assign color_image = product.featured_image
                   for v in product.variants
