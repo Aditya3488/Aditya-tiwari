@@ -1,0 +1,44 @@
+<div class="lh-announce" style="background: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }};">
+  <p class="lh-announce__text">
+    {%- if section.settings.text_1 != blank -%}
+      <span>{{ section.settings.text_1 }}</span>
+    {%- endif -%}
+    {%- if section.settings.text_1 != blank and section.settings.text_2 != blank -%}
+      <span class="lh-announce__sep" aria-hidden="true">✦</span>
+    {%- endif -%}
+    {%- if section.settings.text_2 != blank -%}
+      <span class="lh-announce__second">{{ section.settings.text_2 }}</span>
+    {%- endif -%}
+  </p>
+</div>
+
+{% stylesheet %}
+  .lh-announce { padding: 8px 20px; }
+  .lh-announce__text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
+  }
+  /* Mobile Figma shows only the first message */
+  @media (max-width: 749px) {
+    .lh-announce__sep,
+    .lh-announce__second { display: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LH Announcement bar",
+  "settings": [
+    { "type": "text", "id": "text_1", "label": "Message 1", "default": "Free shipping on orders over ₹999" },
+    { "type": "text", "id": "text_2", "label": "Message 2", "default": "Use code LOOM10 for 10% off your first order" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#2a2b25" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" }
+  ]
+}
+{% endschema %}

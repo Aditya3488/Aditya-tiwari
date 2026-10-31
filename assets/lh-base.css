@@ -1,0 +1,68 @@
+/* Loomhaus base: design tokens + shared button component.
+   Values are eyeballed from the Figma screenshots - verify hex codes in Figma Dev Mode. */
+:root {
+  --lh-cream: #f6f3ec;
+  --lh-dark: #2a2b25;
+  --lh-olive: #747a5e;
+  --lh-sand: #e5dfd1;
+  --lh-sand-hover: #d9d2c1;
+  --lh-red: #8b3a33;
+  --lh-text: #232321;
+  --lh-muted: #6b6a62;
+  --lh-disabled: #a9a9a4;
+  --lh-white: #ffffff;
+
+  --lh-font-head: 'Bricolage Grotesque', sans-serif;
+  --lh-font-body: 'Cabin', sans-serif;
+
+  --lh-page-width: 1440px;
+  --lh-gutter: 90px;
+}
+
+@media (max-width: 749px) {
+  :root { --lh-gutter: 20px; }
+}
+
+body {
+  background: var(--lh-cream);
+  color: var(--lh-text);
+  font-family: var(--lh-font-body);
+}
+
+/* ---------- Button (Primary / Secondary) ---------- */
+.lh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--lh-font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.lh-btn--primary { background: var(--lh-dark); color: var(--lh-white); }
+.lh-btn--secondary { background: var(--lh-sand); color: var(--lh-text); }
+
+.lh-btn__arrow { transition: transform 0.2s ease; }
+
+/* Hover only on devices that really hover (desktop) - Figma: "Hover applies on desktop only" */
+@media (hover: hover) {
+  .lh-btn--primary:hover { background: var(--lh-olive); transform: translateY(-2px); }
+  .lh-btn--secondary:hover { background: var(--lh-sand-hover); transform: translateY(-2px); }
+  .lh-btn:hover .lh-btn__arrow { transform: translateX(4px); }
+}
+
+.lh-btn:disabled,
+.lh-btn.is-loading {
+  background: var(--lh-disabled);
+  color: var(--lh-white);
+  cursor: not-allowed;
+  transform: none;
+}
