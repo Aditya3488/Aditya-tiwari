@@ -1,0 +1,77 @@
+<div class="lh-marquee" style="--lh-marquee-speed: {{ section.settings.speed }}s;">
+  <div class="lh-marquee__track">
+    {%- for i in (1..4) -%}
+      <ul class="lh-marquee__group" {% if i > 1 %}aria-hidden="true"{% endif %}>
+        {%- for block in section.blocks -%}
+          <li class="lh-marquee__item" {{ block.shopify_attributes }}>{{ block.settings.text }}</li>
+          <li class="lh-marquee__sep" aria-hidden="true">✦</li>
+        {%- endfor -%}
+      </ul>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .lh-marquee {
+    overflow: hidden;
+    background: var(--lh-olive);
+    color: var(--lh-white);
+  }
+  .lh-marquee__track {
+    display: flex;
+    width: max-content;
+    animation: lh-marquee var(--lh-marquee-speed, 30s) linear infinite;
+  }
+  .lh-marquee:hover .lh-marquee__track { animation-play-state: paused; }
+
+  .lh-marquee__group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 28px;
+    margin: 0;
+    padding: 12px 28px 12px 0;
+    list-style: none;
+    white-space: nowrap;
+    font-size: 15px;
+  }
+
+  /* 4 identical groups: sliding one group (25%) looks exactly like the start */
+  @keyframes lh-marquee {
+    to { transform: translateX(-25%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lh-marquee__track { animation: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LH Marquee",
+  "settings": [
+    { "type": "range", "id": "speed", "label": "Loop time (seconds, higher = slower)", "min": 10, "max": 60, "step": 5, "default": 30 }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Organic cotton" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LH Marquee",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Organic cotton" } },
+        { "type": "item", "settings": { "text": "Made to last" } },
+        { "type": "item", "settings": { "text": "Sizes XS to L" } },
+        { "type": "item", "settings": { "text": "Free returns" } },
+        { "type": "item", "settings": { "text": "Ethically made" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
