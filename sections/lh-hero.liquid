@@ -79,7 +79,7 @@
   .lh-hero__inner {
     max-width: var(--lh-page-width);
     margin: 0 auto;
-    padding: 70px var(--lh-gutter) 90px;
+    padding: 40px var(--lh-gutter) 56px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
@@ -131,7 +131,8 @@
   .lh-hero__media {
     position: relative;
     justify-self: center;
-    width: min(100%, 430px);
+    /* width is capped by viewport height (image is 4:5), so the hero + marquee fit on one screen */
+    width: min(100%, 430px, 52vh);
   }
   /* big sand circle peeking out behind the arch */
   .lh-hero__media::before {
