@@ -17,10 +17,20 @@
 
   --lh-page-width: 1440px;
   --lh-gutter: 90px;
+
+  /* Fixed heights, so the hero can fill exactly the rest of the first screen */
+  --lh-announce-h: 36px;
+  --lh-header-h: 88px;
+  --lh-marquee-h: 46px;
 }
 
 @media (max-width: 749px) {
-  :root { --lh-gutter: 20px; }
+  :root {
+    --lh-gutter: 20px;
+    --lh-announce-h: 32px;
+    --lh-header-h: 60px;
+    --lh-marquee-h: 42px;
+  }
 }
 
 body {

@@ -76,6 +76,16 @@
   /* Dawn's body uses its own colour scheme (white), so the hero paints its own background */
   .lh-hero { background: var(--lh-cream); }
 
+  /* Desktop: hero takes whatever is left of the first screen, so the marquee sits on the bottom edge */
+  @media (min-width: 750px) {
+    .lh-hero {
+      display: flex;
+      align-items: center;
+      min-height: calc(100svh - var(--lh-announce-h) - var(--lh-header-h) - var(--lh-marquee-h));
+    }
+    .lh-hero__inner { width: 100%; }
+  }
+
   .lh-hero__inner {
     max-width: var(--lh-page-width);
     margin: 0 auto;
@@ -102,7 +112,7 @@
     margin: 22px 0 24px;
     max-width: 6.5em;
     font-family: var(--lh-font-head);
-    font-size: clamp(44px, 5.6vw, 80px);
+    font-size: clamp(44px, min(5.6vw, 9vh), 80px); /* also shrinks on short screens */
     font-weight: 800;
     line-height: 0.98;
     letter-spacing: -0.02em;
