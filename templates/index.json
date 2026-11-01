@@ -1,44 +1,182 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "lh-hero": {
       "type": "lh-hero",
       "blocks": {
-        "stat-1": { "type": "stat", "settings": { "value": "4.8★", "label": "2,000+ reviews" } },
-        "stat-2": { "type": "stat", "settings": { "value": "100%", "label": "organic cotton" } },
-        "stat-3": { "type": "stat", "settings": { "value": "30 days", "label": "free returns" } }
+        "stat-1": {
+          "type": "stat",
+          "settings": {
+            "value": "4.8★",
+            "label": "2,000+ reviews"
+          }
+        },
+        "stat-2": {
+          "type": "stat",
+          "settings": {
+            "value": "100%",
+            "label": "organic cotton"
+          }
+        },
+        "stat-3": {
+          "type": "stat",
+          "settings": {
+            "value": "30 days",
+            "label": "free returns"
+          }
+        }
       },
-      "block_order": ["stat-1", "stat-2", "stat-3"],
-      "settings": { "card_product": "yellow-wool-jumper" }
+      "block_order": [
+        "stat-1",
+        "stat-2",
+        "stat-3"
+      ],
+      "settings": {
+        "badge": "New season · Autumn / Winter",
+        "heading": "The Winter Edit",
+        "text": "Warm layers, honest fabrics and fits that work every day. Discover the pieces our community wears on repeat this season.",
+        "button_label": "Shop now",
+        "button_link": "",
+        "card_product": "yellow-wool-jumper",
+        "card_caption": "Bestseller this week"
+      }
     },
     "lh-marquee": {
       "type": "lh-marquee",
       "blocks": {
-        "item-1": { "type": "item", "settings": { "text": "Organic cotton" } },
-        "item-2": { "type": "item", "settings": { "text": "Made to last" } },
-        "item-3": { "type": "item", "settings": { "text": "Sizes XS to L" } },
-        "item-4": { "type": "item", "settings": { "text": "Free returns" } },
-        "item-5": { "type": "item", "settings": { "text": "Ethically made" } }
+        "item-1": {
+          "type": "item",
+          "settings": {
+            "text": "Organic cotton"
+          }
+        },
+        "item-2": {
+          "type": "item",
+          "settings": {
+            "text": "Made to last"
+          }
+        },
+        "item-3": {
+          "type": "item",
+          "settings": {
+            "text": "Sizes XS to L"
+          }
+        },
+        "item-4": {
+          "type": "item",
+          "settings": {
+            "text": "Free returns"
+          }
+        },
+        "item-5": {
+          "type": "item",
+          "settings": {
+            "text": "Ethically made"
+          }
+        }
       },
-      "block_order": ["item-1", "item-2", "item-3", "item-4", "item-5"],
-      "settings": { "speed": 30 }
+      "block_order": [
+        "item-1",
+        "item-2",
+        "item-3",
+        "item-4",
+        "item-5"
+      ],
+      "settings": {
+        "speed": 30
+      }
     },
     "lh-product-grid": {
       "type": "lh-product-grid",
       "blocks": {
-        "tile-1": { "type": "tile", "settings": { "product": "ocean-blue-shirt", "x": 50, "y": 30 } },
-        "tile-2": { "type": "tile", "settings": { "product": "olive-green-jacket", "x": 56, "y": 41 } },
-        "tile-3": { "type": "tile", "settings": { "product": "navy-sport-jacket", "x": 43, "y": 36 } },
-        "tile-4": { "type": "tile", "settings": { "product": "striped-silk-blouse", "x": 52, "y": 30 } },
-        "tile-5": { "type": "tile", "settings": { "product": "led-high-tops", "x": 44, "y": 55 } },
-        "tile-6": { "type": "tile", "settings": { "product": "striped-skirt-and-top", "x": 51, "y": 67 } }
+        "tile-1": {
+          "type": "tile",
+          "settings": {
+            "product": "ocean-blue-shirt",
+            "x": 50,
+            "y": 30
+          }
+        },
+        "tile-2": {
+          "type": "tile",
+          "settings": {
+            "product": "olive-green-jacket",
+            "x": 56,
+            "y": 41
+          }
+        },
+        "tile-3": {
+          "type": "tile",
+          "settings": {
+            "product": "navy-sport-jacket",
+            "x": 43,
+            "y": 36
+          }
+        },
+        "tile-4": {
+          "type": "tile",
+          "settings": {
+            "product": "striped-silk-blouse",
+            "x": 52,
+            "y": 30
+          }
+        },
+        "tile-5": {
+          "type": "tile",
+          "settings": {
+            "product": "led-high-tops",
+            "x": 44,
+            "y": 55
+          }
+        },
+        "tile-6": {
+          "type": "tile",
+          "settings": {
+            "product": "striped-skirt-and-top",
+            "x": 51,
+            "y": 67
+          }
+        }
       },
-      "block_order": ["tile-1", "tile-2", "tile-3", "tile-4", "tile-5", "tile-6"],
-      "settings": {}
+      "block_order": [
+        "tile-1",
+        "tile-2",
+        "tile-3",
+        "tile-4",
+        "tile-5",
+        "tile-6"
+      ],
+      "settings": {
+        "eyebrow": "Shop the look",
+        "heading": "Loomhaus in the wild",
+        "hint": "Tap the + on any look to shop it."
+      }
     },
     "lh-featured-product": {
       "type": "lh-featured-product",
-      "settings": { "product": "classic-varsity-top" }
+      "settings": {
+        "product": "classic-varsity-top",
+        "tax_note": "MRP inclusive of all taxes",
+        "default_size": "M",
+        "offers": [
+          "10",
+          "15"
+        ]
+      }
     }
   },
-  "order": ["lh-hero", "lh-marquee", "lh-product-grid", "lh-featured-product"]
+  "order": [
+    "lh-hero",
+    "lh-marquee",
+    "lh-product-grid",
+    "lh-featured-product"
+  ]
 }
