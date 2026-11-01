@@ -1,0 +1,233 @@
+{%- liquid
+  assign card_product = section.settings.card_product
+  assign hero_image = section.settings.image
+-%}
+
+<section class="lh-hero">
+  <div class="lh-hero__inner">
+
+    <div class="lh-hero__content">
+      {%- if section.settings.badge != blank -%}
+        <span class="lh-hero__badge">{{ section.settings.badge }}</span>
+      {%- endif -%}
+
+      <h1 class="lh-hero__title">{{ section.settings.heading }}</h1>
+
+      {%- if section.settings.text != blank -%}
+        <p class="lh-hero__text">{{ section.settings.text }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="lh-btn lh-btn--primary lh-hero__cta">
+          {{ section.settings.button_label }}
+          <svg class="lh-btn__arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+            <path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="lh-hero__stats">
+          {%- for block in section.blocks -%}
+            <li class="lh-hero__stat" {{ block.shopify_attributes }}>
+              <strong class="lh-hero__stat-value">{{ block.settings.value }}</strong>
+              <span class="lh-hero__stat-label">{{ block.settings.label }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    <div class="lh-hero__media">
+      <div class="lh-hero__arch">
+        {%- if hero_image != blank -%}
+          {{
+            hero_image
+            | image_url: width: 1000
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              widths: '400, 600, 800, 1000',
+              sizes: '(min-width: 750px) 430px, 90vw',
+              class: 'lh-hero__img'
+          }}
+        {%- else -%}
+          {{ 'hero-apparel-2' | placeholder_svg_tag: 'lh-hero__img lh-hero__placeholder' }}
+        {%- endif -%}
+      </div>
+
+      {%- if card_product != blank -%}
+        <a href="{{ card_product.url }}" class="lh-hero__card">
+          {%- if card_product.featured_image -%}
+            {{ card_product.featured_image | image_url: width: 80 | image_tag: loading: 'lazy', class: 'lh-hero__card-img', alt: '' }}
+          {%- endif -%}
+          <span class="lh-hero__card-body">
+            <strong>{{ card_product.title }}</strong>
+            <small>{{ section.settings.card_caption }}</small>
+          </span>
+        </a>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  /* Dawn's body uses its own colour scheme (white), so the hero paints its own background */
+  .lh-hero { background: var(--lh-cream); }
+
+  /* Desktop: hero takes whatever is left of the first screen, so the marquee sits on the bottom edge */
+  @media (min-width: 750px) {
+    .lh-hero {
+      display: flex;
+      align-items: center;
+      min-height: calc(100svh - var(--lh-announce-h) - var(--lh-header-h) - var(--lh-marquee-h));
+    }
+    .lh-hero__inner { width: 100%; }
+  }
+
+  .lh-hero__inner {
+    max-width: var(--lh-page-width);
+    margin: 0 auto;
+    padding: 40px var(--lh-gutter) 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .lh-hero__badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--lh-olive);
+    color: var(--lh-white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .lh-hero__title {
+    margin: 22px 0 24px;
+    max-width: 6.5em;
+    font-family: var(--lh-font-head);
+    font-size: clamp(44px, min(5.6vw, 9vh), 80px); /* also shrinks on short screens */
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+  }
+
+  .lh-hero__text {
+    max-width: 440px;
+    margin: 0 0 30px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--lh-muted);
+  }
+
+  .lh-hero__stats {
+    display: flex;
+    gap: 40px;
+    margin: 36px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .lh-hero__stat { display: flex; flex-direction: column; gap: 2px; }
+  .lh-hero__stat-value { font-family: var(--lh-font-head); font-size: 26px; font-weight: 700; }
+  .lh-hero__stat-label { font-size: 12px; color: var(--lh-muted); }
+
+  /* ---------- Image side ---------- */
+  .lh-hero__media {
+    position: relative;
+    justify-self: center;
+    /* width is capped by viewport height (image is 4:5), so the hero + marquee fit on one screen */
+    width: min(100%, 430px, 52vh);
+  }
+  /* big sand circle peeking out behind the arch */
+  .lh-hero__media::before {
+    content: '';
+    position: absolute;
+    top: 6%;
+    right: -14%;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--lh-sand);
+  }
+  .lh-hero__arch {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 999px 999px 28px 28px;
+  }
+  .lh-hero__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lh-hero__placeholder { background: var(--lh-sand); }
+
+  .lh-hero__card {
+    position: absolute;
+    left: -16%;
+    bottom: 12%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px 8px 8px;
+    border-radius: 14px;
+    background: var(--lh-white);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    color: var(--lh-text);
+    text-decoration: none;
+  }
+  .lh-hero__card-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--lh-sand); }
+  .lh-hero__card-body { display: flex; flex-direction: column; font-size: 13px; line-height: 1.3; }
+  .lh-hero__card-body small { font-size: 11px; color: var(--lh-muted); }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 749px) {
+    .lh-hero__inner { grid-template-columns: 1fr; padding-top: 28px; padding-bottom: 44px; gap: 32px; }
+    .lh-hero__title { margin-bottom: 16px; }
+    .lh-hero__text { font-size: 16px; }
+    .lh-hero .lh-hero__cta { display: flex; justify-content: center; width: 100%; }
+    .lh-hero__stats { justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .lh-hero__media { width: 85%; }
+    .lh-hero__card { display: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LH Hero",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "text", "id": "badge", "label": "Badge", "default": "New season · Autumn / Winter" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The Winter Edit" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Warm layers, honest fabrics and fits that work every day. Discover the pieces our community wears on repeat this season." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "image_picker", "id": "image", "label": "Hero image" },
+    { "type": "header", "content": "Floating card" },
+    { "type": "product", "id": "card_product", "label": "Product" },
+    { "type": "text", "id": "card_caption", "label": "Caption", "default": "Bestseller this week" }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "4.8★" },
+        { "type": "text", "id": "label", "label": "Label", "default": "2,000+ reviews" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LH Hero",
+      "blocks": [
+        { "type": "stat", "settings": { "value": "4.8★", "label": "2,000+ reviews" } },
+        { "type": "stat", "settings": { "value": "100%", "label": "organic cotton" } },
+        { "type": "stat", "settings": { "value": "30 days", "label": "free returns" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

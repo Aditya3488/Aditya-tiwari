@@ -1,0 +1,106 @@
+{%- liquid
+  assign shop_menu = section.settings.shop_menu
+  assign help_menu = section.settings.help_menu
+-%}
+
+<footer class="lh-footer">
+  <div class="lh-footer__inner">
+
+    <div class="lh-footer__brand">
+      <a href="{{ routes.root_url }}" class="lh-footer__logo">{{ section.settings.brand | default: shop.name }}</a>
+      {%- if section.settings.tagline != blank -%}
+        <p class="lh-footer__tagline">{{ section.settings.tagline }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if shop_menu != blank and shop_menu.links.size > 0 -%}
+      <nav class="lh-footer__col" aria-label="{{ section.settings.shop_heading | escape }}">
+        <h2 class="lh-footer__heading">{{ section.settings.shop_heading }}</h2>
+        <ul class="lh-footer__list">
+          {%- for link in shop_menu.links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+    {%- if help_menu != blank and help_menu.links.size > 0 -%}
+      <nav class="lh-footer__col" aria-label="{{ section.settings.help_heading | escape }}">
+        <h2 class="lh-footer__heading">{{ section.settings.help_heading }}</h2>
+        <ul class="lh-footer__list">
+          {%- for link in help_menu.links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+  </div>
+</footer>
+
+{% stylesheet %}
+  .lh-footer {
+    background: var(--lh-dark);
+    color: var(--lh-white);
+    font-family: var(--lh-font-body);
+  }
+  .lh-footer__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    max-width: var(--lh-page-width);
+    margin: 0 auto;
+    padding: 56px var(--lh-gutter) 64px;
+  }
+
+  .lh-footer__logo {
+    font-family: var(--lh-font-head);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--lh-sand);
+    text-decoration: none;
+  }
+  .lh-footer__tagline { margin: 6px 0 0; font-size: 12px; }
+
+  .lh-footer__heading {
+    margin: 0 0 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lh-sand);
+  }
+  .lh-footer__list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .lh-footer__list a { font-size: 13px; color: var(--lh-white); text-decoration: none; }
+  @media (hover: hover) { .lh-footer__list a:hover { text-decoration: underline; } }
+
+  /* Mobile: brand on top, the two menus side by side */
+  @media (max-width: 749px) {
+    .lh-footer__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      padding-top: 40px;
+      padding-bottom: 44px;
+    }
+    .lh-footer__brand { grid-column: 1 / -1; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LH Footer",
+  "settings": [
+    { "type": "text", "id": "brand", "label": "Brand name", "default": "Loomhaus" },
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Clothes made to be worn for years, not seasons." },
+    { "type": "header", "content": "Shop menu" },
+    { "type": "text", "id": "shop_heading", "label": "Heading", "default": "Shop" },
+    { "type": "link_list", "id": "shop_menu", "label": "Menu" },
+    { "type": "header", "content": "Help menu" },
+    { "type": "text", "id": "help_heading", "label": "Heading", "default": "Help" },
+    { "type": "link_list", "id": "help_menu", "label": "Menu" }
+  ],
+  "presets": [{ "name": "LH Footer" }]
+}
+{% endschema %}
