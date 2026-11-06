@@ -32,7 +32,7 @@
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    console.log(data)
+    console.log("payload:", data)
     if (!res.ok) throw new Error(data.description || data.message || 'Could not update the cart.');
     return data;
   };
